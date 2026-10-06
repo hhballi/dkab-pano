@@ -1,0 +1,27 @@
+name: Kapat
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 8 * * 1,2"   # Pzt-Salı 11:15 TSİ (4. saat boş)
+    - cron: "40 10 * * 1,2"  # Pzt-Salı 13:40 TSİ (6. ders 13:30 biter)
+    - cron: "0 14 * * *"     # Her gün 17:00 TSİ güvenlik kapanışı
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pano
+  cancel-in-progress: false
+jobs:
+  kapat:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: kapali
+      - uses: actions/deploy-pages@v4

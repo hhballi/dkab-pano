@@ -1,0 +1,31 @@
+name: Aç
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "35 5 * * 1,2"   # Pzt-Salı 08:35 TSİ (1. ders 08:50)
+    - cron: "50 8 * * 1,2"   # Pzt-Salı 11:50 TSİ (5. ders 12:10)
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pano
+  cancel-in-progress: false
+jobs:
+  ac:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - name: Paketi çöz
+        env:
+          PANO_ANAHTAR: ${{ secrets.PANO_ANAHTAR }}
+        run: |
+          mkdir _site
+          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -pass env:PANO_ANAHTAR -d -in paket.enc | tar -x -C _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
